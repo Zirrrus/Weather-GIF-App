@@ -3,12 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Weather_GIF_App
 {
 	class WeatherGifSettings
 	{
-		public string OutputFilePath { get; } = "";
+		public string OutputFolderPath { get; } = "";
+
+		public string GifFileName { get; } = "weather";
+		public const string GifFormat = "gif";
+
+		public bool RenderStillImage { get; } = false;
+
+		public string StillImageFileName { get; } = "weather_still";
+		public readonly ImageFormat StillImageFormat = ImageFormat.Png;
+		public const string StillImageFileExtension = "png";
 
 		public int FrameDelay { get; } = 250;
 		public int FrameDelayLast { get; } = -1;
@@ -38,7 +49,12 @@ namespace Weather_GIF_App
 
 		public string ParsingOutput { get; }
 
-		private const string PATH = "path";
+		private const string FOLDER_PATH = "folder_path";
+
+		private const string GIF_NAME = "gif_name";
+
+		private const string RENDER_STILL = "save_still";
+		private const string STILL_NAME = "still_name";
 
 		private const string DELAY = "delay";
 		private const string DELAY_LAST = "delay_last";
@@ -69,7 +85,7 @@ namespace Weather_GIF_App
 
 		public WeatherGifSettings(string[] args)
 		{
-			OutputFilePath = @"C:\Users\<USER>\Desktop\weather.gif".Replace("<USER>", Environment.UserName);
+			OutputFolderPath = $@"C:\Users\{Environment.UserName}\Desktop\";
 
 			if (args.Length > 0)
 			{
@@ -86,11 +102,26 @@ namespace Weather_GIF_App
 						string value = split[1].Trim();
 
 
-						if (key == PATH)
+						if (key == FOLDER_PATH)
 						{
-							OutputFilePath = value;
-							settingsOutput += spacing + "path = " + OutputFilePath;
+							OutputFolderPath = value;
+							settingsOutput += spacing + "folder path = " + OutputFolderPath;
 						}
+						else if (key == GIF_NAME)
+						{
+							GifFileName = value;
+							settingsOutput += spacing + "gif file name = " + GifFileName + "." + GifFormat;
+						}
+						else if (key == RENDER_STILL)
+						{
+							RenderStillImage = (value == YES);
+							settingsOutput += spacing + "rendering still image = " + RenderStillImage;
+						}
+						else if (key == STILL_NAME)
+						{
+							StillImageFileName = value;
+							settingsOutput += spacing + "still image file name = " + GifFileName + "." + StillImageFormat;
+						}					
 						else if (key == DELAY)
 						{
 							if (int.TryParse(value, out int delay))

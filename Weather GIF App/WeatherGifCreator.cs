@@ -89,7 +89,14 @@ namespace Weather_GIF_App
 				predictionFrames = ResizeFrames(predictionFrames, s.OutputWidth, s.OutputHeight);
 			}
 
-			BuildAndSaveGif(s.OutputFilePath, frames, s.FrameDelay, s.FrameDelayLast, predictionFrames, s.PredictionFrameDelay, s.PredictionFrameDelayLast);
+			if (s.RenderStillImage)
+			{
+				string stillOutputPath = $"{s.OutputFolderPath}\\{s.StillImageFileName}.{WeatherGifSettings.StillImageFileExtension}";
+				SaveStillImage(stillOutputPath, s.StillImageFormat, frames);
+			}
+
+			string gifOutputPath = $"{s.OutputFolderPath}\\{s.GifFileName}.{WeatherGifSettings.GifFormat}";
+			BuildAndSaveGif(gifOutputPath, frames, s.FrameDelay, s.FrameDelayLast, predictionFrames, s.PredictionFrameDelay, s.PredictionFrameDelayLast);
 
 			// free up some memory
 
@@ -424,6 +431,16 @@ namespace Weather_GIF_App
 				frames[i] = resizedFrame;
 			}
 			return frames;
+		}
+
+		private void SaveStillImage(string outputPath, ImageFormat imageFormat, List<Bitmap> frames)
+		{
+			if (frames == null || frames.Count < 1) { return; }
+
+			Log("Creating still image from last 'normal' frame");
+
+			Bitmap stillFrame = frames[frames.Count - 1];
+			stillFrame.Save(outputPath, imageFormat);
 		}
 
 		private void BuildAndSaveGif(string outputPath, List<Bitmap> frames, int frameDelay, int frameDelayLast, List<Bitmap> predictionFrames, int predictionFrameDelay, int predictionFrameDelayLast)
